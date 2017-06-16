@@ -206,7 +206,7 @@ class coapTransmitter(threading.Thread):
 
         # turn message into exception if needed
         if message['code'] not in d.METHOD_ALL+d.COAP_RC_ALL_SUCCESS:
-            message = e.coapRcFactory(message['code'])
+            message = e.coapRcFactory(rc=message['code'], reason=u.buf2str(message['payload']))
 
         # store packet
         with self.dataLock:

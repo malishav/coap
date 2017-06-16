@@ -55,7 +55,7 @@ class coapRc(coapException):
         coapException.__init__(self,reason=reason)
 
 class coapRcFactory(object):
-    def __new__(klass,rc):
+    def __new__(klass,rc,reason=''):
         coapRcClasses = []
         for (i,j) in globals().iteritems():
             try:
@@ -65,7 +65,7 @@ class coapRcFactory(object):
                 pass
         for coapRcClass in coapRcClasses:
             if coapRcClass.rc==rc:
-                return coapRcClass()
+                return coapRcClass(reason=reason)
         return coapRcUnknown(rc)
 
 class coapRcUnknown(coapRc):
