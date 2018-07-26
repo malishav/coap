@@ -345,7 +345,7 @@ class AES_CCM_16_64_128(CCMAlgorithm):
 
 class SecurityContext:
     REPLAY_WINDOW_SIZE = 64
-    def __init__(self, masterSecret, senderID, recipientID, aeadAlgorithm = AES_CCM_64_64_128(), masterSalt = '', hashFunction = hashlib.sha256):
+    def __init__(self, masterSecret='', senderID='', recipientID='', aeadAlgorithm=AES_CCM_64_64_128(), masterSalt='', hashFunction=hashlib.sha256):
 
         # Common context
         self.aeadAlgorithm = aeadAlgorithm
@@ -355,43 +355,27 @@ class SecurityContext:
 
         # Sender context
         self.senderID = senderID
-        self.senderKey = self._hkdfDeriveParameter(self.hashFunction,
-                                                   self.masterSecret,
-                                                   self.masterSalt,
-                                                   self.senderID,
-                                                   self.aeadAlgorithm.value,
-                                                   'Key',
-                                                   self.aeadAlgorithm.keyLength
-                                                   )
-
-        self.senderIV = self._hkdfDeriveParameter(self.hashFunction,
-                                                  self.masterSecret,
-                                                  self.masterSalt,
-                                                  self.senderID,
-                                                  self.aeadAlgorithm.value,
-                                                  'IV',
-                                                  self.aeadAlgorithm.ivLength
+        self.senderKey = self.hkdfDeriveParameter(self.senderID,
+                                                  'Key',
+                                                  self.aeadAlgorithm.keyLength
                                                   )
+
+        self.senderIV = self.hkdfDeriveParameter(self.senderID,
+                                                 'IV',
+                                                 self.aeadAlgorithm.ivLength
+                                                 )
         self.sequenceNumber = 0
 
         # Recipient context
         self.recipientID = recipientID
-        self.recipientKey = self._hkdfDeriveParameter(self.hashFunction,
-                                                   self.masterSecret,
-                                                   self.masterSalt,
-                                                   self.recipientID,
-                                                   self.aeadAlgorithm.value,
-                                                   'Key',
-                                                   self.aeadAlgorithm.keyLength
+        self.recipientKey = self.hkdfDeriveParameter(self.recipientID,
+                                                     'Key',
+                                                     self.aeadAlgorithm.keyLength
+                                                     )
+        self.recipientIV = self.hkdfDeriveParameter(self.recipientID,
+                                                    'IV',
+                                                    self.aeadAlgorithm.ivLength
                                                     )
-        self.recipientIV = self._hkdfDeriveParameter(self.hashFunction,
-                                                   self.masterSecret,
-                                                   self.masterSalt,
-                                                   self.recipientID,
-                                                   self.aeadAlgorithm.value,
-                                                   'IV',
-                                                   self.aeadAlgorithm.ivLength
-                                                   )
         self.replayWindow = [0]
 
     # ======================== public ==========================================
@@ -423,19 +407,18 @@ class SecurityContext:
 
         self.replayWindow += [sequenceNumber]
 
-    # ======================== private ==========================================
-
-    def _hkdfDeriveParameter(self, hashFunction, masterSecret, masterSalt, id, algorithm, type, length):
+    def hkdfDeriveParameter(self, id='', type='', length=16):
 
         info = cbor.dumps([
             id,
-            algorithm,
+            self.aeadAlgorithm.value,
             unicode(type), # encode as text string
             length
         ])
 
-        extract = hkdf.hkdf_extract(salt=masterSalt, input_key_material=masterSecret, hash=hashFunction)
-        expand = hkdf.hkdf_expand(pseudo_random_key=extract, info=info, length=length, hash=hashFunction)
+        extract = hkdf.hkdf_extract(salt=self.masterSalt, input_key_material=self.masterSecret, hash=self.hashFunction)
+        expand = hkdf.hkdf_expand(pseudo_random_key=extract, info=info, length=length, hash=self.hashFunction)
 
         return expand
 
+    # ======================== private ==========================================
