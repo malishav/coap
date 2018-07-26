@@ -40,7 +40,7 @@ def test_METHODNOTALLOWED(logFixture,snoopyDispatcher,twoEndPoints,confirmableFi
     
     # have coap2 do a post
     with pytest.raises(e.coapRcMethodNotAllowed):
-        reply = coap2.POST(
+        (respCode, respOptions, respPayload) = coap2.POST(
             uri         = 'coap://[{0}]:{1}/{2}/'.format(IPADDRESS1,d.DEFAULT_UDP_PORT,RESOURCE),
             confirmable = confirmableFixture,
             options=options

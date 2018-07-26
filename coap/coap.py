@@ -76,7 +76,7 @@ class coap(object):
             options     = options,
         )
         log.debug('response: {0}'.format(response))
-        return response['payload']
+        return (response['code'], response['options'], response['payload'])
 
     def PUT(self,uri,confirmable=True,options=[],payload=None):
         response = self._transmit(
@@ -87,7 +87,7 @@ class coap(object):
             payload     = payload
         )
         log.debug('response: {0}'.format(response))
-        return response['payload']
+        return (response['code'], response['options'], response['payload'])
 
     def POST(self,uri,confirmable=True,options=[],payload=None):
         response = self._transmit(
@@ -98,7 +98,7 @@ class coap(object):
             payload     = payload
         )
         log.debug('response: {0}'.format(response))
-        return response['payload']
+        return (response['code'], response['options'], response['payload'])
 
     def DELETE(self,uri,confirmable=True,options=[]):
         self._transmit(

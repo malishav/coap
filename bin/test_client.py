@@ -9,6 +9,7 @@ import binascii
 from   coap import coap
 from coap import coapOption           as o
 from coap import coapObjectSecurity   as oscoap
+from coap import coapUtils            as u
 
 import logging_setup
 
@@ -26,13 +27,15 @@ objectSecurity = o.ObjectSecurity(context=context)
 
 try:
     # retrieve value of 'test' resource
-    p = c.GET('coap://[{0}]/test'.format(SERVER_IP),
+    (respCode, respOptions, respPayload) = c.GET('coap://[{0}]/test'.format(SERVER_IP),
               confirmable=True,
               options=[objectSecurity])
 
     print '====='
-    print ''.join([chr(b) for b in p])
+    print ''.join([chr(b) for b in respPayload])
+    print binascii.hexlify(u.buf2str(respPayload))
     print '====='
+
 except Exception as err:
     print err
 

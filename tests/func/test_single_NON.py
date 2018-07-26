@@ -34,10 +34,10 @@ def test_GET(logFixture,snoopyDispatcher,twoEndPoints):
         options = [o.ObjectSecurity(context=context)]
     
     # have coap2 do a get
-    reply = coap2.GET(
+    (respCode, respOptions, respPayload) = coap2.GET(
         uri         = 'coap://[{0}]:{1}/{2}/'.format(IPADDRESS1,d.DEFAULT_UDP_PORT,RESOURCE),
         confirmable = False,
         options=options,
     )
-    assert reply==DUMMYVAL
+    assert respPayload==DUMMYVAL
     
