@@ -17,7 +17,7 @@ import constants
 
 import logging_setup
 
-AS_IP = '::1'
+AS_IP = 'bbbb::1415:92cc:0:1'
 SCOPE = 'resource1'
 AUTHZ_INFO = 'authz-info'
 
@@ -25,7 +25,7 @@ AUTHZ_INFO = 'authz-info'
 c = coap.coap(udpPort=5000)
 
 context = oscoap.SecurityContext(masterSecret=binascii.unhexlify('000102030405060708090A0B0C0D0E0F'),
-                                 senderID=binascii.unhexlify('141592cc00000001'),
+                                 senderID=binascii.unhexlify('636c69656e74'),
                                  recipientID='JRC',
                                  aeadAlgorithm=oscoap.AES_CCM_16_64_128())
 
