@@ -12,12 +12,13 @@ from coap import coapOption           as o
 from coap import coapObjectSecurity   as oscoap
 from coap import coapDefines          as d
 from coap import coapUtils            as u
+from coap import coapException        as e
 
 import constants
 
 import logging_setup
 
-AS_IP = 'bbbb::1415:92cc:0:1'
+RS_IP = 'bbbb::1415:92cc:0:2'
 SCOPE = 'resource1'
 AUTHZ_INFO = 'authz-info'
 
@@ -34,10 +35,32 @@ objectSecurity = o.ObjectSecurity(context=context)
 contentFormat = o.ContentFormat(cformat=[d.FORMAT_CBOR])
 
 try:
+    # Step 0. Request resource without OSCORE
+    (respCode, respOptions, respPayload) = c.GET('coap://[{0}]/{1}'.format(RS_IP, SCOPE),
+                                                  confirmable=True,
+                                                  options=[],
+                                                  )
+
+    print '===== GET to coap://[{0}]/{1} returned ====='.format(RS_IP, SCOPE)
+    print binascii.hexlify(cbor.dumps(respPayload))
+    print '====='
+
+except e.coapRcUnauthorized as err:
+
+    print "Unauthorized exception handling."
+    as_info = cbor.loads(err.reason)
+
+    print '====== Response payload ======'
+    print as_info
+    print '====='
+
+    as_uri = str(as_info[constants.ACE_AS_INFO_LABEL_AS])
+    print as_uri
 
     # Step 1: Request authorization from the AS to access "resource1"
     request_payload = {}
     request_payload[constants.ACE_PARAMETERS_LABELS_GRANT_TYPE] = constants.ACE_CBOR_ABBREVIATIONS_CLIENT_CREDENTIALS
+    request_payload[constants.ACE_PARAMETERS_LABELS_AUD] = unicode(RS_IP)
     request_payload[constants.ACE_PARAMETERS_LABELS_SCOPE] = unicode(SCOPE)
 
     print '====== Request payload ======'
@@ -45,11 +68,11 @@ try:
     print '====='
 
     # obtain an access token
-    (respCode, respOptions, respPayload) = c.POST('coap://[{0}]/token'.format(AS_IP),
-              confirmable=True,
-              options=[contentFormat, objectSecurity],
-              payload=u.str2buf(cbor.dumps(request_payload))
-              )
+    (respCode, respOptions, respPayload) = c.POST(as_uri,
+                                                  confirmable=True,
+                                                  options=[contentFormat, objectSecurity],
+                                                  payload=u.str2buf(cbor.dumps(request_payload))
+                                                  )
 
     payload_hex = u.buf2str(respPayload)
     print '====== Response payload ======'
@@ -66,7 +89,8 @@ try:
     if cose_key[constants.COSE_KEY_LABEL_KTY] != constants.COSE_KEY_VALUE_SYMMETRIC:
         raise NotImplementedError
 
-    if cose_key.get(constants.COSE_KEY_LABEL_ALG, constants.COSE_ALG_AES_CCM_16_64_128) != constants.COSE_ALG_AES_CCM_16_64_128:
+    if cose_key.get(constants.COSE_KEY_LABEL_ALG,
+                    constants.COSE_ALG_AES_CCM_16_64_128) != constants.COSE_ALG_AES_CCM_16_64_128:
         raise NotImplementedError
     else:
         aeadAlgo = oscoap.AES_CCM_16_64_128()
@@ -81,28 +105,36 @@ try:
 
     access_token = as_response[constants.ACE_PARAMETERS_LABELS_ACCESS_TOKEN]
 
-    audience = as_response.get(constants.ACE_PARAMETERS_LABELS_AUD, AS_IP)  # if audience is not given, what RS should we default to?
+    audience = as_response.get(constants.ACE_PARAMETERS_LABELS_AUD,
+                               "coap://[{0}]".format(RS_IP))  # if audience is not given, default to the RS we contacted in the first place
 
     # Step 3: POST the access token to the RS over unprotected channel
     (respCode, respOptions, respPayload) = c.POST('{0}/{1}'.format(audience, AUTHZ_INFO),
-              confirmable=True,
-              options=[],
-              payload=u.str2buf(access_token)
-              )
+                                                  confirmable=True,
+                                                  options=[],
+                                                  payload=u.str2buf(access_token)
+                                                  )
 
     if respCode != d.COAP_RC_2_01_CREATED:
         raise NotImplementedError
 
-    # Step 4: Request the resource over OSCORE
-    oscore = o.ObjectSecurity(context=context_c_rs)
-    (respCode, respOptions, respPayload) = c.GET('{0}/{1}'.format(audience, SCOPE),
-                                                  confirmable=True,
-                                                  options=[oscore],
-                                                  )
 
-    print '===== GET to {0}/{1} returned ====='.format(audience, SCOPE)
-    print ''.join([chr(b) for b in respPayload])
-    print '====='
+    try:
+        # Step 4: Request the resource over OSCORE
+        oscore = o.ObjectSecurity(context=context_c_rs)
+        (respCode, respOptions, respPayload) = c.GET('{0}/{1}'.format(audience, SCOPE),
+                                                     confirmable=True,
+                                                     options=[
+                                                         oscore
+                                                     ],
+                                                     )
+
+        print '===== GET to {0}/{1} returned ====='.format(audience, SCOPE)
+        print ''.join([chr(b) for b in respPayload])
+        print '====='
+
+    except Exception as err:
+        print err
 
 # this includes CoAP errors
 except Exception as err:

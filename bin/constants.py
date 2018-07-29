@@ -37,6 +37,10 @@ ACE_CWT_CNF_COSE_KEY = 1
 ACE_CWT_CNF_ENCRYPTED_COSE_KEY = 2
 ACE_CWT_CNF_KID = 3
 
+#  Figure 2 from draft-ietf-ace-oauth-authz-13:
+ACE_AS_INFO_LABEL_AS = 0
+ACE_AS_INFO_LABEL_NONCE = 5
+
 # values from RFC8152
 
 # COSE key labels
