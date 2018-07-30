@@ -108,18 +108,17 @@ except e.coapRcUnauthorized as err:
     audience = as_response.get(constants.ACE_PARAMETERS_LABELS_AUD,
                                "coap://[{0}]".format(RS_IP))  # if audience is not given, default to the RS we contacted in the first place
 
-    # Step 3: POST the access token to the RS over unprotected channel
-    (respCode, respOptions, respPayload) = c.POST('{0}/{1}'.format(audience, AUTHZ_INFO),
-                                                  confirmable=True,
-                                                  options=[],
-                                                  payload=u.str2buf(access_token)
-                                                  )
-
-    if respCode != d.COAP_RC_2_01_CREATED:
-        raise NotImplementedError
-
-
     try:
+        # Step 3: POST the access token to the RS over unprotected channel
+        (respCode, respOptions, respPayload) = c.POST('{0}/{1}'.format(audience, AUTHZ_INFO),
+                                                      confirmable=True,
+                                                      options=[],
+                                                      payload=u.str2buf(access_token)
+                                                      )
+
+        if respCode != d.COAP_RC_2_01_CREATED:
+            raise NotImplementedError
+
         # Step 4: Request the resource over OSCORE
         oscore = o.ObjectSecurity(context=context_c_rs)
         (respCode, respOptions, respPayload) = c.GET('{0}/{1}'.format(audience, SCOPE),
