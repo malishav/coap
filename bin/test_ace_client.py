@@ -34,6 +34,27 @@ objectSecurity = o.ObjectSecurity(context=context)
 
 contentFormat = o.ContentFormat(cformat=[d.FORMAT_CBOR])
 
+def abort(c):
+    c.close()
+    time.sleep(0.500)
+    raw_input("Done. Press enter to close.")
+    sys.exit()
+
+def ask_user(question):
+    check = str(raw_input("{0} ? (y/n): ".format(question))).lower().strip()
+    try:
+        if check[0] == 'y':
+            return True
+        elif check[0] == 'n':
+            return False
+        else:
+            print('Invalid Input')
+            return ask_user(question)
+    except Exception as error:
+        print("Please enter valid inputs")
+        print(error)
+        return ask_user(question)
+
 try:
     # Step 0. Request resource without OSCORE
     (respCode, respOptions, respPayload) = c.GET('coap://[{0}]/{1}'.format(RS_IP, SCOPE),
@@ -46,12 +67,14 @@ try:
     print '====='
 
 except e.coapRcUnauthorized as err:
-
-    print "Unauthorized exception handling."
     as_info = cbor.loads(err.reason)
-
-    print '====== Response payload ======'
+    print '====='
+    print "Resource Server responded with 4.01 Unauthorized."
+    print "AS information object:"
     print as_info
+    print '====='
+    if not ask_user("Shall we request the access token from the AS?"):
+        abort(c)
     print '====='
 
     as_uri = str(as_info[constants.ACE_AS_INFO_LABEL_AS])
@@ -63,9 +86,10 @@ except e.coapRcUnauthorized as err:
     request_payload[constants.ACE_PARAMETERS_LABELS_AUD] = unicode(RS_IP)
     request_payload[constants.ACE_PARAMETERS_LABELS_SCOPE] = unicode(SCOPE)
 
-    print '====== Request payload ======'
+    print '====== Requesting access token from the AS ======'
+    print "Request payload:"
     print binascii.hexlify(cbor.dumps(request_payload))
-    print '====='
+
 
     # obtain an access token
     (respCode, respOptions, respPayload) = c.POST(as_uri,
@@ -73,9 +97,10 @@ except e.coapRcUnauthorized as err:
                                                   options=[contentFormat, objectSecurity],
                                                   payload=u.str2buf(cbor.dumps(request_payload))
                                                   )
-
+    print '====='
+    print "Resource Server responded with 2.04 Changed."
     payload_hex = u.buf2str(respPayload)
-    print '====== Response payload ======'
+    print 'Response payload:'
     print binascii.hexlify(payload_hex)
     print '====='
 
@@ -109,6 +134,12 @@ except e.coapRcUnauthorized as err:
                                "coap://[{0}]".format(RS_IP))  # if audience is not given, default to the RS we contacted in the first place
 
     try:
+        print '====='
+        if not ask_user("Shall we send the access token to the RS?"):
+            abort(c)
+        print '====='
+
+
         # Step 3: POST the access token to the RS over unprotected channel
         (respCode, respOptions, respPayload) = c.POST('{0}/{1}'.format(audience, AUTHZ_INFO),
                                                       confirmable=True,
@@ -118,6 +149,15 @@ except e.coapRcUnauthorized as err:
 
         if respCode != d.COAP_RC_2_01_CREATED:
             raise NotImplementedError
+
+        print '====='
+        print "Resource Server responded with 2.01 Created."
+        print '====='
+
+        print '====='
+        if not ask_user("Shall we request the resource again, using the obtained token?"):
+            abort(c)
+        print '====='
 
         # Step 4: Request the resource over OSCORE
         oscore = o.ObjectSecurity(context=context_c_rs)
@@ -139,10 +179,5 @@ except e.coapRcUnauthorized as err:
 except Exception as err:
     print err
 
+abort(c)
 
-# close
-c.close()
-
-time.sleep(0.500)
-
-raw_input("Done. Press enter to close.")
