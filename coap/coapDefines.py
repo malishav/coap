@@ -17,6 +17,9 @@ DFLT_DEFAULT_LEISURE                   = 5    # in s. For multicast request, pic
 DFLT_EXCHANGE_LIFETIME                 = 248  # lifetime of a message ID
 DFLT_RESPONSE_TIMEOUT                  = 60   # delay for app-level response
 
+# Option value helpers
+DFLT_OPTION_NORESPONSE_SUPRESS_ALL     = 26   # RFC7967 value to supress all responses
+
 # CoAP Message Types
 TYPE_CON                               = 0
 TYPE_NON                               = 1
@@ -115,6 +118,7 @@ OPTION_NUM_PROXYURI                    = 35
 OPTION_NUM_PROXYSCHEME                 = 39
 OPTION_NUM_OBJECT_SECURITY             = 21 # plugtest value
 OPTION_NUM_STATELESSPROXY              = 40 # experimental value
+OPTION_NUM_NORESPONSE                  = 258 # RFC7967
 OPTION_NUM_ALL = [
     OPTION_NUM_IFMATCH,
     OPTION_NUM_URIHOST,
@@ -134,6 +138,7 @@ OPTION_NUM_ALL = [
     OPTION_NUM_PROXYSCHEME,
     OPTION_NUM_OBJECT_SECURITY,
     OPTION_NUM_STATELESSPROXY,
+    OPTION_NUM_NORESPONSE,
 ]
 
 # CoAP Content-Format Registry

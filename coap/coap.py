@@ -369,11 +369,20 @@ class coap(object):
                     objectSecurity = o.ObjectSecurity(context=foundContext)
                     respOptions += [objectSecurity]
 
-                # if Stateless-Proxy option was present in the request echo it
+                # process special options
                 for option in options:
+                    # if Stateless - Proxy option was present in the request echo it
                     if isinstance(option, o.StatelessProxy):
                         respOptions += [option]
-                        break
+                    # if No Response option was present in the request, don't send the response
+                    if isinstance(option, o.NoResponse):
+                        if option.getPayloadBytes() == d.DFLT_OPTION_NORESPONSE_SUPRESS_ALL:
+                            # exit without returning any response
+                            log.info("Suppressing a response due to the {0} option in the request.".format(option))
+                            return
+                        else:
+                            # selective suppression not implemented for now
+                            raise NotImplementedError()
 
                 # build response packets and pass partialIV from the request for OSCOAP's processing
                 response = m.buildMessage(
