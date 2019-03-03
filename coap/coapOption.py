@@ -274,15 +274,15 @@ class StatelessProxy(coapOption):
 
 # === OPTION_NUM_NORESPONSE
 class NoResponse(coapOption):
-    def __init__(self, buf):
+    def __init__(self, value):
         # initialize parent
         coapOption.__init__(self, d.OPTION_NUM_NORESPONSE, d.OSCOAP_CLASS_E)
 
         # store params
-        if len(buf) != 1:
+        if len(value) != 1:
             raise e.messageFormatError
 
-        self.supressionValue = u.buf2int(buf)
+        self.supressionValue = value
 
     def __repr__(self):
         return 'NoResponse(value={0})'.format(self.supressionValue)
@@ -397,7 +397,7 @@ def parseOption(message,previousOptionNumber):
     elif optionNumber==d.OPTION_NUM_STATELESSPROXY:
         option = StatelessProxy(value=optionValue)
     elif optionNumber==d.OPTION_NUM_NORESPONSE:
-        option = NoResponse(buf=optionValue)
+        option = NoResponse(value=optionValue)
     else:
         raise NotImplementedError('option {0} not implemented'.format(optionNumber))
     
