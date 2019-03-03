@@ -274,7 +274,7 @@ class StatelessProxy(coapOption):
 
 # === OPTION_NUM_NORESPONSE
 class NoResponse(coapOption):
-    def __init__(self, value):
+    def __init__(self, value=[d.DFLT_OPTION_NORESPONSE_SUPRESS_ALL]):
         # initialize parent
         coapOption.__init__(self, d.OPTION_NUM_NORESPONSE, d.OSCOAP_CLASS_E)
 
