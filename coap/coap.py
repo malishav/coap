@@ -376,7 +376,7 @@ class coap(object):
                         respOptions += [option]
                     # if No Response option was present in the request, don't send the response
                     if isinstance(option, o.NoResponse):
-                        if option.getPayloadBytes() == d.DFLT_OPTION_NORESPONSE_SUPRESS_ALL:
+                        if option.getPayloadBytes() == [d.DFLT_OPTION_NORESPONSE_SUPRESS_ALL]:
                             # exit without returning any response
                             log.info("Suppressing a response due to the {0} option in the request.".format(option))
                             return
