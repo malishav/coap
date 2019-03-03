@@ -14,6 +14,7 @@ import coapDefines          as d
 import coapException        as e
 import coapUtils            as u
 import coapMessage          as m
+import coapOption           as o
 
 class coapTransmitter(threading.Thread):
     '''
@@ -36,6 +37,7 @@ class coapTransmitter(threading.Thread):
     STATE_WAITFOREXPIRATIONMID    = 'WAITFOREXPIRATIONMID'
     STATE_WAITFORRESP             = 'WAITFORRESP'
     STATE_RESPRX                  = 'RESPRX'
+    STATE_NORESPEXPECTED          = 'NORESPEXPECTED'
     STATE_TXACK                   = 'TXACK'
     STATE_ALL = [
         STATE_INIT,
@@ -133,6 +135,7 @@ class coapTransmitter(threading.Thread):
             self.STATE_WAITFORRESP:              self._action_WAITFORRESP,
             self.STATE_RESPRX:                   self._action_RESPRX,
             self.STATE_TXACK:                    self._action_TXACK,
+            self.STATE_NORESPEXPECTED:           self._action_NORESPEXPECTED,
         }
 
         # initialize parent
@@ -331,8 +334,21 @@ class coapTransmitter(threading.Thread):
             msg              = message,
         )
 
-        # update FSM state
-        self._setState(self.STATE_WAITFORRESP)
+        noResponse = False
+        for option in self.options:
+            if isinstance(option, o.NoResponse):
+                if option.getPayloadBytes() == [d.DFLT_OPTION_NORESPONSE_SUPRESS_ALL]:
+                    # do not expect a response
+                    noResponse = True
+                else:
+                    # selective suppression not implemented for now
+                    raise NotImplementedError()
+        # in case no response is expected, do not hang waiting for the timeout
+        if not noResponse:
+            # update FSM state
+            self._setState(self.STATE_WAITFORRESP)
+        else:
+            self._setState(self.STATE_NORESPEXPECTED)
 
         # kick FSM
         self._kickFsm()
@@ -469,6 +485,18 @@ class coapTransmitter(threading.Thread):
                 self.coapResponse = message
         else:
             raise SystemError('unexpected message type {0}'.format(message['type']))
+
+        # kick FSM
+        self._kickFsm()
+
+    def _action_NORESPEXPECTED(self):
+
+        # log
+        log.debug('_action_NORESPEXPECTED()')
+
+        # successful end of FSM
+        with self.dataLock:
+            self.coapError = e.coapNoResponseExpected('No Response is expected for this request')
 
         # kick FSM
         self._kickFsm()
