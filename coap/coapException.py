@@ -25,6 +25,11 @@ class coapException(Exception):
 class coapDelayedResponse(coapException):
     pass
 
+#============================ no response needed ==============================
+
+class coapNoResponseExpected(coapException):
+    pass
+
 #============================ timeout =========================================
 
 class coapTimeout(coapException):
