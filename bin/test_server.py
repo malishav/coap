@@ -20,7 +20,7 @@ class testResource(coapResource.coapResource):
             path = 'test',
         )
     
-    def GET(self,options=[]):
+    def GET(self,options=[],metaData={}):
         
         print 'GET received'
         

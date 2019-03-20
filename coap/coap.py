@@ -239,6 +239,15 @@ class coap(object):
 
         srcPort = sender[1]
 
+        # meta data useful in testing mode
+        metaData = {}
+        metaData['srcIP'] = srcIp
+        metaData['srcPort'] = srcPort
+        i = 0
+        for var in sender[2]:
+            metaData['generic_{0}'.format(i)] = var
+            i += 1
+
         # parse messages
         try:
             message = m.parseMessage(rawbytes)
@@ -326,21 +335,25 @@ class coap(object):
                 try:
                     if   message['code']==d.METHOD_GET and d.METHOD_GET in authorizedMethods:
                         (respCode,respOptions,respPayload) = resource.GET(
-                            options=options
+                            options=options,
+                            metaData=metaData,
                         )
                     elif message['code']==d.METHOD_POST and d.METHOD_POST in authorizedMethods:
                         (respCode,respOptions,respPayload) = resource.POST(
                             options=options,
-                            payload=payload
+                            payload=payload,
+                            metaData=metaData,
                         )
                     elif message['code']==d.METHOD_PUT and d.METHOD_PUT in authorizedMethods:
                         (respCode,respOptions,respPayload) = resource.PUT(
                             options=options,
-                            payload=payload
+                            payload=payload,
+                            metaData=metaData,
                         )
                     elif message['code']==d.METHOD_DELETE and d.METHOD_DELETE in authorizedMethods:
                         (respCode,respOptions,respPayload) = resource.DELETE(
-                            options=options
+                            options=options,
+                            metaData=metaData,
                         )
                     elif message['code'] not in d.METHOD_ALL:
                         raise SystemError('unexpected code {0}'.format(message['code']))

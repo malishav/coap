@@ -92,7 +92,7 @@ class socketUdpReal(socketUdp.socketUdp):
                     continue
                 
                 timestamp = time.time()
-                source    = (conn[0],conn[1])
+                source    = (conn[0],conn[1],())
                 data      = [ord(b) for b in raw]
                 
                 log.debug("got {2} from {1} at {0}".format(timestamp,source,data))

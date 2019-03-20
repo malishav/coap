@@ -23,16 +23,16 @@ class coapResource(object):
     
     #======================== abstract methods ================================
     
-    def GET(self,options=[]):
+    def GET(self,options=[],metaData={}):
         raise e.coapRcMethodNotAllowed()
     
-    def PUT(self,options=[],payload=None):
+    def PUT(self,options=[],payload=None,metaData={}):
         raise e.coapRcMethodNotAllowed()
     
-    def POST(self,options=[],payload=None):
+    def POST(self,options=[],payload=None,metaData={}):
         raise e.coapRcMethodNotAllowed()
     
-    def DELETE(self,options=[]):
+    def DELETE(self,options=[],metaData={}):
         raise e.coapRcMethodNotAllowed()
     
     #======================== public ==========================================

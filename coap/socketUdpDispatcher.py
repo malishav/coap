@@ -44,7 +44,7 @@ class socketUdpDispatcher(socketUdp.socketUdp):
         # send over dispatcher
         dispatcher.send(
             signal = (destIp,destPort),
-            sender = (self.ipAddress,self.udpPort),
+            sender = (self.ipAddress,self.udpPort, ()),
             data   = msg
         )
         

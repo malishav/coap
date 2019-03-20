@@ -35,7 +35,7 @@ class buggyResource(coapResource.coapResource):
     
     #======================== parent methods ==================================
     
-    def GET(self,options=[]):
+    def GET(self,options=[],metaData={}):
         log.debug('buggyResource GET')
         
         # raise some exception

@@ -143,7 +143,7 @@ class dummyResource(coapResource.coapResource):
     
     #======================== parent methods ==================================
     
-    def GET(self,options=[]):
+    def GET(self,options=[],metaData={}):
         log.debug('dummyResource GET')
         
         respCode        = d.COAP_RC_2_05_CONTENT
