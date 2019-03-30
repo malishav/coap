@@ -46,7 +46,7 @@ def test_GET(logFixture,snoopyDispatcher,twoEndPoints):
     
     # have coap2 do a get
     with pytest.raises(e.coapTimeout):
-        reply = coap2.GET(
+        reply, meta = coap2.GET(
             uri         = 'coap://[{0}]:{1}/{2}/'.format(IPADDRESS_INVALID,d.DEFAULT_UDP_PORT,RESOURCE),
             confirmable = True,
             options=options,

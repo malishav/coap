@@ -61,7 +61,7 @@ def test_UNAUTHORIZED_2(logFixture, snoopyDispatcher, twoEndPoints, confirmableF
         clientOptions = [o.ObjectSecurity(context=clientContext)]
 
         with pytest.raises(e.coapRcUnauthorized):
-            reply = coap2.GET(
+            reply, meta = coap2.GET(
                 uri='coap://[{0}]:{1}/{2}/'.format(IPADDRESS1, d.DEFAULT_UDP_PORT, RESOURCE),
                 confirmable=confirmableFixture,
                 options=clientOptions

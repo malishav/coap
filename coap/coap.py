@@ -73,7 +73,7 @@ class coap(object):
             options     = options,
         )
         log.debug('response: {0}'.format(response))
-        return response['payload']
+        return response['payload'], response['metaData']
 
     def PUT(self,uri,confirmable=True,options=[],payload=None):
         response = self._transmit(
@@ -84,7 +84,7 @@ class coap(object):
             payload     = payload
         )
         log.debug('response: {0}'.format(response))
-        return response['payload']
+        return response['payload'], response['metaData']
 
     def POST(self,uri,confirmable=True,options=[],payload=None):
         response = self._transmit(
@@ -95,7 +95,7 @@ class coap(object):
             payload     = payload
         )
         log.debug('response: {0}'.format(response))
-        return response['payload']
+        return response['payload'], response['metaData']
 
     def DELETE(self,uri,confirmable=True,options=[]):
         self._transmit(
@@ -249,6 +249,7 @@ class coap(object):
         try:
             message = m.parseMessage(rawbytes)
             options = message['options']
+            message['metaData'] = metaData
         except e.messageFormatError as err:
             log.warning('malformed message {0}: {1}'.format(u.formatBuf(rawbytes),str(err)))
             return

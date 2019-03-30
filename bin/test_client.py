@@ -26,7 +26,7 @@ objectSecurity = o.ObjectSecurity(context=context)
 
 try:
     # retrieve value of 'test' resource
-    p = c.GET('coap://[{0}]/test'.format(SERVER_IP),
+    p,m = c.GET('coap://[{0}]/test'.format(SERVER_IP),
               confirmable=True,
               options=[objectSecurity])
 

@@ -41,7 +41,7 @@ def test_NOTFOUND(logFixture,snoopyDispatcher,twoEndPoints,confirmableFixture):
     
     # have coap2 do a get
     with pytest.raises(e.coapRcNotFound):
-        reply = coap2.GET(
+        reply, meta = coap2.GET(
             uri         = 'coap://[{0}]:{1}/{2}/'.format(IPADDRESS1,d.DEFAULT_UDP_PORT,RESOURCE_INVALID),
             confirmable = confirmableFixture,
             options=options,
