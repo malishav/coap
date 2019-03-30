@@ -425,7 +425,7 @@ class coap(object):
                     for (k,v) in self.transmitters.items():
                         # try matching
                         if (
-                                msgkey[0]==k[0] and
+                                u.ipv6AddrString2Bytes(msgkey[0])==u.ipv6AddrString2Bytes(k[0]) and
                                 msgkey[1]==k[1] and
                                 (
                                     msgkey[2]==k[2] or

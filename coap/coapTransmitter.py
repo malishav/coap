@@ -200,7 +200,7 @@ class coapTransmitter(threading.Thread):
             return self.state
 
     def receiveMessage(self, timestamp, srcIp, srcPort, message):
-        assert srcIp==self.destIp
+        assert u.ipv6AddrString2Bytes(srcIp)==u.ipv6AddrString2Bytes(self.destIp)
         assert srcPort==self.destPort
         assert (message['token']==self.token) or (message['messageId']==self.messageId)
 
