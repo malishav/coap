@@ -264,12 +264,11 @@ def _constructAeadNonce(aeadAlgorithm, piv, idPiv, commonIV):
     nonceLen = aeadAlgorithm.ivLength
 
     pivBuf = u.str2buf(piv.lstrip('\0'))
-    idPivBuf = u.str2buf(idPiv)
 
     pivPadded = [0] * (5 - len(pivBuf)) + pivBuf
-    idPivPadded = [0] * (nonceLen - 6 - len(idPivBuf)) + idPivBuf
+    idPivPadded = [0] * (nonceLen - 6 - len(idPiv)) + list(idPiv)
 
-    buf = [len(idPivBuf)] + idPivPadded + pivPadded
+    buf = [len(idPiv)] + idPivPadded + pivPadded
 
     assert len(buf) == nonceLen
 

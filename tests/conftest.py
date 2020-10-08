@@ -45,7 +45,7 @@ IPADDRESS1          = 'aaaa::1'
 IPADDRESS2          = 'aaaa::2'
 
 RESOURCE            = 'res'
-DUMMYVAL            = [0x00,0x01,0x02]
+DUMMYVAL            = bytes([0x00,0x01,0x02])
 
 OSCORECLIENTCONTEXT             = os.path.join(here, "oscore_test_context_client.json")
 OSCORESERVERCONTEXT             = os.path.join(here, "oscore_test_context_server.json")

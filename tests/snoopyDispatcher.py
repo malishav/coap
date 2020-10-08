@@ -157,10 +157,7 @@ class snoopyDispatcher(threading.Thread):
         )
         
         # write to file
-        stringToWrite   = ''.join(
-           [pcapMsgHeader]+[''.join([chr(b) for b in bytesToWrite])]
-        )
-        self.pcapFile.write(stringToWrite)
+        self.pcapFile.write(pcapMsgHeader + bytes(bytesToWrite))
         self.pcapFile.flush()
         
-        log.debug('written {0} bytes'.format(len(stringToWrite)))
+        log.debug('written {0} bytes'.format(len(pcapMsgHeader + bytes(bytesToWrite))))
