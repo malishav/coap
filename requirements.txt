@@ -1,7 +1,7 @@
 scons
 PyDispatcher
-pylint==1.9.5
+pylint
 pycryptodome
 cbor
 hkdf
-pytest==4.6.9
+pytest
