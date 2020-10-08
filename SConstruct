@@ -12,7 +12,7 @@ banner += ["`___'|  _/\___.|_|_||__/_/ <___/|_\_|"]
 banner += ["     |_|                  openwsn.org"]
 banner += [""]
 
-print '\n'.join(banner)
+print('\n'.join(banner))
 
 #============================ SCons environment ===============================
 
@@ -30,7 +30,7 @@ Usage:
     scons pylint_error
 ''')
 
-def default(env,target,source): print SCons.Script.help_text
+def default(env,target,source): print(SCons.Script.help_text)
 Default(env.Command('default', None, default))
 
 #============================ SCons targets ===================================
@@ -57,7 +57,7 @@ env.Alias('pylint_error', pylint_error)
 
 unittests = env.Command(
     'test_report.xml', [],
-    'py.test tests/unit/ --junitxml $TARGET.file',
+    'python3 -m pytest tests/unit/ --junitxml $TARGET.file',
 )
 env.AlwaysBuild(unittests)
 env.Alias('unittests', unittests)
@@ -66,7 +66,7 @@ env.Alias('unittests', unittests)
 
 functests = env.Command(
     'test_report.xml', [],
-    'py.test tests/func/ --junitxml $TARGET.file',
+    'python3 -m pytest tests/func/ --junitxml $TARGET.file',
 )
 env.AlwaysBuild(functests)
 env.Alias('functests', functests)
@@ -75,7 +75,7 @@ env.Alias('functests', functests)
 
 alltests = env.Command(
     'test_report.xml', [],
-    'py.test tests --junitxml $TARGET.file',
+    'python3 -m pytest tests --junitxml $TARGET.file',
 )
 env.AlwaysBuild(alltests)
 env.Alias('alltests', alltests)

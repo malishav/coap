@@ -17,7 +17,7 @@ c.respTimeout = 2 # sec
 
 # get status of LED
 p = c.GET('coap://[{0}]/l'.format(MOTE_IP),)
-print chr(p[0])
+print(chr(p[0]))
 
 # toggle debug LED
 p = c.PUT(
@@ -27,9 +27,9 @@ p = c.PUT(
 
 # read status of debug LED
 p = c.GET('coap://[{0}]/l'.format(MOTE_IP))
-print chr(p[0])
+print(chr(p[0]))
 
 # close
 c.close()
 
-raw_input("Done. Press enter to close.")
+input("Done. Press enter to close.")

@@ -9,7 +9,7 @@ log.addHandler(NullHandler())
 import socket
 import time
 
-import socketUdp
+from . import socketUdp
 import threading
 
 class socketUdpReal(socketUdp.socketUdp):
@@ -50,9 +50,6 @@ class socketUdpReal(socketUdp.socketUdp):
     
     def sendUdp(self,destIp,destPort,msg):
         
-        # convert msg to string
-        msg = ''.join([chr(b) for b in msg])
-        
         # send over UDP
         with self.socketLock:
             addrinfo = socket.getaddrinfo(destIp, destPort)
@@ -66,7 +63,7 @@ class socketUdpReal(socketUdp.socketUdp):
         self.goOn = False
         
         # send some dummy value into the socket to trigger a read
-        self.socket_handler.sendto( 'stop', ('::1',self.udpPort) )
+        self.socket_handler.sendto('stop'.encode(), ('::1',self.udpPort) )
         
         # wait for this thread to exit
         self.join()
@@ -93,7 +90,7 @@ class socketUdpReal(socketUdp.socketUdp):
                 
                 timestamp = time.time()
                 source    = (conn[0],conn[1])
-                data      = [ord(b) for b in raw]
+                data      = raw
                 
                 log.debug("got {2} from {1} at {0}".format(timestamp,source,data))
                 

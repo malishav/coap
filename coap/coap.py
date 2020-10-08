@@ -11,18 +11,18 @@ import random
 import traceback
 import socket
 
-import coapTokenizer        as t
-import coapUtils            as u
-import coapMessage          as m
-import coapException        as e
-import coapResource         as r
-import coapDefines          as d
-import coapOption           as o
-import coapObjectSecurity   as oscore
-import coapUri
-import coapTransmitter
-from socketUdpDispatcher import socketUdpDispatcher
-from socketUdpReal       import socketUdpReal
+from . import coapTokenizer        as t
+from . import coapUtils            as u
+from . import coapMessage          as m
+from . import coapException        as e
+from . import coapResource         as r
+from . import coapDefines          as d
+from . import coapOption           as o
+from . import coapObjectSecurity   as oscore
+from . import coapUri
+from . import coapTransmitter
+from .socketUdpDispatcher import socketUdpDispatcher
+from .socketUdpReal       import socketUdpReal
 
 class coap(object):
 
@@ -158,7 +158,7 @@ class coap(object):
                 maxRetransmit   = self.maxRetransmit
             )
             key              = (destIp,destPort,token,messageId)
-            assert key not in self.transmitters.keys()
+            assert key not in list(self.transmitters.keys())
             self.transmitters[key] = newTransmitter
 
         response = newTransmitter.transmit()
@@ -190,7 +190,7 @@ class coap(object):
             while not found:
                 messageId = random.randint(0x0000,0xffff)
                 alreadyUsed = False
-                for (kIp,kPort,kToken,kMessageId) in self.transmitters.keys():
+                for (kIp,kPort,kToken,kMessageId) in list(self.transmitters.keys()):
                     if destIp==kIp and destPort==kPort and messageId==kMessageId:
                         alreadyUsed = True
                         break
@@ -208,7 +208,7 @@ class coap(object):
             while not found:
                 token = random.randint(0x00,0xff)
                 alreadyUsed = False
-                for (kIp,kPort,kToken,kMessageId) in self.transmitters.keys():
+                for (kIp,kPort,kToken,kMessageId) in list(self.transmitters.keys()):
                     if destIp==kIp and destPort==kPort and token==kToken:
                         alreadyUsed = True
                         break
@@ -218,7 +218,7 @@ class coap(object):
 
     def _cleanupTransmitter(self):
         with self.transmittersLock:
-            for (k,v) in self.transmitters.items():
+            for (k,v) in list(self.transmitters.items()):
                 if not v.isAlive():
                     del self.transmitters[k]
 
@@ -257,16 +257,15 @@ class coap(object):
                 innerOptions = []
                 foundContext = None
                 requestPartialIV = None
-                if 'ciphertext' in message.keys():
+                if 'ciphertext' in list(message.keys()):
                     # retrieve security context
                     # before decrypting we don't know what resource this request is meant for
                     # so we take the first binding with the correct context (recipientID)
-                    kidContext = u.buf2str(message['kidContext']) if message['kidContext'] is not None else None
-                    blindContext = self._securityContextLookup(u.buf2str(message['kid']), kidContext)
+                    blindContext = self._securityContextLookup(message['kid'], message['kidContext'])
 
                     if not blindContext:
                         if self.secContextHandler:
-                            appContext = self.secContextHandler(u.buf2str(message['kid']), kidContext)
+                            appContext = self.secContextHandler(u.buf2str(message['kid']), message['kidContext'])
                             if not appContext:
                                 raise e.coapRcUnauthorized('Security context not found.')
                         else:
@@ -407,7 +406,7 @@ class coap(object):
                 found  = False
                 with self.transmittersLock:
                     self._cleanupTransmitter()
-                    for (k,v) in self.transmitters.items():
+                    for (k,v) in list(self.transmitters.items()):
                         # try matching
                         if (
                                 msgkey[0]==k[0] and
@@ -424,7 +423,7 @@ class coap(object):
                     raise e.coapRcBadRequest(
                         'could not find transmitter corresponding to {0}, transmitters are {1}'.format(
                             msgkey,
-                            ','.join([str(k) for k in self.transmitters.keys()])
+                            ','.join([str(k) for k in list(self.transmitters.keys())])
                         )
                     )
 

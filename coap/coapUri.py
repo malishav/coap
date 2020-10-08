@@ -8,10 +8,10 @@ log.addHandler(NullHandler())
 
 import re
 
-import coapUtils     as u
-import coapOption    as o
-import coapException as e
-import coapDefines   as d
+from . import coapUtils     as u
+from . import coapOption    as o
+from . import coapException as e
+from . import coapDefines   as d
 
 def uri2options(uri):
     '''

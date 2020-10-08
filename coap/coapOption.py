@@ -6,9 +6,9 @@ log = logging.getLogger('coapOption')
 log.setLevel(logging.ERROR)
 log.addHandler(NullHandler())
 
-import coapUtils     as u
-import coapException as e
-import coapDefines   as d
+from . import coapUtils     as u
+from . import coapException as e
+from . import coapDefines   as d
 
 #============================ classes =========================================
 

@@ -6,11 +6,11 @@ log = logging.getLogger('coapMessage')
 log.setLevel(logging.ERROR)
 log.addHandler(NullHandler())
 
-import coapOption         as o
-import coapUtils          as u
-import coapException      as e
-import coapDefines        as d
-import coapObjectSecurity as oscore
+from . import coapOption         as o
+from . import coapUtils          as u
+from . import coapException      as e
+from . import coapDefines        as d
+from . import coapObjectSecurity as oscore
 
 def sortOptions(options):
     # TODO implement sorting when more options are implemented
@@ -72,7 +72,7 @@ def buildMessage(msgtype,token,code,messageId,options=[],payload=[],securityCont
     # add payload
     message += encodePayload(newPayload)
     
-    return message
+    return bytes(message)
 
 def parseMessage(message):
     

@@ -11,8 +11,8 @@ import threading
 
 from pydispatch import dispatcher
 
-import socketUdp
-import coapUtils as u
+from . import socketUdp
+from . import coapUtils as u
 
 class socketUdpDispatcher(socketUdp.socketUdp):
     

@@ -27,15 +27,15 @@ try:
               confirmable=True,
               options=[objectSecurity])
 
-    print '====='
-    print ''.join([chr(b) for b in p])
-    print '====='
+    print('=====')
+    print(''.join([chr(b) for b in p]))
+    print('=====')
 except Exception as err:
-    print err
+    print(err)
 
 # close
 c.close()
 
 time.sleep(0.500)
 
-raw_input("Done. Press enter to close.")
+input("Done. Press enter to close.")
