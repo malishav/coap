@@ -40,6 +40,12 @@ def str2buf(str):
 
 #===== byte manipulation
 
+def xorBytes(b1, b2):
+    parts = []
+    for b1, b2 in zip(b1, b2):
+        parts.append(bytes([b1 ^ b2]))
+    return bytes(b''.join(parts))
+
 def xorStrings(s1,s2):
     assert len(s1) == len(s2)
     return ''.join(chr(ord(a) ^ ord(b)) for a, b in zip(s1, s2))
