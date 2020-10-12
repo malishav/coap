@@ -265,7 +265,7 @@ class coap(object):
 
                     if not blindContext:
                         if self.secContextHandler:
-                            appContext = self.secContextHandler(u.buf2str(message['kid']), message['kidContext'])
+                            appContext = self.secContextHandler(bytes(message['kid']), bytes(message['kidContext']))
                             if not appContext:
                                 raise e.coapRcUnauthorized('Security context not found.')
                         else:
@@ -273,7 +273,7 @@ class coap(object):
 
                     foundContext = blindContext if blindContext != None else appContext
 
-                    requestPartialIV = u.zeroPadString(u.buf2str(message['partialIV']), foundContext.getIVLength())
+                    requestPartialIV = bytes(message['partialIV'])
 
                     # decrypt the message
                     try:
