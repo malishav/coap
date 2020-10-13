@@ -491,8 +491,8 @@ class coapTransmitter(threading.Thread):
 
         # send
         self.sendFunc(
-            destIp           = message['srcId'],
-            destPort         = message['srcPort'],
+            destIp           = message['srcId'],  #pylint: disable=E1126
+            destPort         = message['srcPort'],  #pylint: disable=E1126
             msg              = message,
         )
 
